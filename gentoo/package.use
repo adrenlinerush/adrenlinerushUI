@@ -1,0 +1,37 @@
+sys-kernel/gentoo-sources symlink
+net-wireless/wpa_supplicant tkip wep eap-sim fasteap
+sys-apps/pcsc-lite libusb
+media-video/mplayer -xv -enca -iconv -shm -truetype -xscreensaver mp3 v4l vcd vorvis -libass -osdmenu
+media-sound/moc ffmpeg flac vorbis
+media-video/ffmpeg mp3
+www-client/links jpeg tiff
+mail-client/alpine passfile smime
+app-misc/mc sftp
+media-libs/gst-plugins-base -opengl
+net-im/pidgin -gtk -gstreamer -xscreensaver
+media-gfx/fim bmp gif jpeg png tiff
+media-libs/freetype static-libs
+app-arch/bzip2 static-libs
+sys-libs/zlib static-libs
+media-libs/libpng static-libs
+virtual/jpeg static-libs
+media-libs/libjpeg-turbo static-libs
+media-gfx/splashutils fbcondecor
+media-libs/harfbuzz -intrspections -truetype -cairo
+app-i18n/fbterm -video_cards_vesa
+media-libs/netpbm jpeg png tiff
+media-libs/harfbuzz truetype
+dev-qt/qtgui linuxfb jpeg udev evdev -libinput
+media-libs/libglvnd X
+dev-qt/qtmultimedia widgets gstreamer
+sys-libs/zlib minizip
+dev-qt/qtwebchannel qml
+dev-libs/libxml2 icu
+dev-qt/qtwebengine widgets -binddist
+dev-python/PyQt5 widgets multimedia sql opengl network dbus declarative printsupport gui webchannel
+dev-qt/qtcore icu
+#www-client/w3m imlib
+media-libs/gst-plugins-base egl gbm opengl
+media-plugins/gst-plugins-meta alsa dvd ffmpeg flac http mp3 mpeg ogg vorbis
+dev-qt/qtprintsupport cups
+app-text/ghostscript-gpl cups
