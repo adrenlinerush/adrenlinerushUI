@@ -8,10 +8,61 @@ from PyQt5.QtMultimediaWidgets import *
 from qvncwidget import QVNCWidget
 from QTermWidget import QTermWidget
 import os, sys, logging, qdarkstyle 
+import subprocess, time, threading, datetime
 import qtawesome as qta
 logging.basicConfig(filename="ui.log", encoding='utf-8', level=logging.ERROR)
 textchars = bytearray({7,8,9,10,12,13,27} | set(range(0x20, 0x100)) - {0x7f})
 is_binary_string = lambda bytes: bool(bytes.translate(None, textchars))
+
+
+class MDIArea(QMdiArea):
+
+    def __init__(self, background_pixmap, parent = None):
+    
+        QMdiArea.__init__(self, parent)
+        self.background_pixmap = background_pixmap
+        self.centered = False
+    
+    def paintEvent(self, event):
+    
+        painter = QPainter()
+        painter.begin(self.viewport())
+        
+        if not self.centered:
+            painter.drawPixmap(0, 0, self.width(), self.height(), self.background_pixmap)
+        else:
+            painter.fillRect(event.rect(), self.palette().color(QPalette.Window))
+            x = (self.width() - self.display_pixmap.width())/2
+            y = (self.height() - self.display_pixmap.height())/2
+            painter.drawPixmap(x, y, self.display_pixmap)
+        
+        painter.end()
+    
+    def resizeEvent(self, event):
+    
+        self.display_pixmap = self.background_pixmap.scaled(event.size(), Qt.KeepAspectRatio)
+
+
+class statusBar(QObject):
+
+    def __init__(self, status_label):
+        super().__init__()
+        self.status_label = status_label
+
+    def update_status_bar(self):
+        try:
+            while True: 
+                acpi_info = subprocess.check_output(['acpi'], shell=True)
+                battery = acpi_info.decode('utf-8')
+                current = datetime.datetime.now()
+                self.status_label.setText(str(current.strftime("%m-%d-%Y %H:%M")+"\t\t"+battery))
+                time.sleep(1)
+        except Exception as e:
+            logging.error("App.update_status")
+            logging.error(e)
+            logging.exception("message")
+
+
 class App(QMainWindow):
 
     def __init__(self):
@@ -20,14 +71,15 @@ class App(QMainWindow):
             self.setWindowIcon(QIcon('adrenaline.png'))
             self.shortcut_quit = QShortcut(QKeySequence("Ctrl+Q"),self)
             self.shortcut_quit.activated.connect(QApplication.instance().quit)
-            self.mdi = QMdiArea()
+            #self.mdi = QMdiArea()
+            self.bg_img = QPixmap('adrenaline.jpg')
+            self.mdi = MDIArea(self.bg_img)
             self.mdi.subWindowActivated.connect(self.update_window_list)
             self.shortcut_next_window = QShortcut(QKeySequence("Alt+Tab"), self)
             self.shortcut_next_window.activated.connect(self.mdi.activateNextSubWindow)
             self.setCentralWidget(self.mdi)
             self.add_terminal()
             self.add_tabbed_browser()
-            self.mdi.tileSubWindows()
             bar = self.menuBar()
 		
             start = bar.addMenu("Start")
@@ -47,11 +99,33 @@ class App(QMainWindow):
             self.windows = bar.addMenu("Window")
             self.windows.triggered[QAction].connect(self.window_activate)
 
+            self.status_label = QLabel("")
+            self.statusBar().addPermanentWidget(self.status_label)
+            self.start_status_bar()
+
+            self.mdi.tileSubWindows()
             self.show()
+
         except Exception as e:
             logging.error("App.__init__")
             logging.error(e)
             logging.exception("message")
+
+    def start_status_bar(self):
+        try:
+            logging.info("App.start_status_bar")
+            self.status_thread = QThread()
+            self.status_worker = statusBar(self.status_label)
+            self.status_worker.moveToThread(self.status_thread)
+            self.status_thread.started.connect(self.status_worker.update_status_bar)
+            logging.info("bout to start status thread")
+            self.status_thread.start()
+        except Exception as e:
+            logging.error("App.start_status_bar")
+            logging.error(e)
+            logging.exception("message")
+
+
 
     def view(self, action):
         if action.text() == "Tile":
@@ -96,16 +170,26 @@ class App(QMainWindow):
             activate_action.setData(window)
             self.windows.addAction(activate_action)
 
-    def add_terminal(self):
+    def add_sub_window(self, widget, title):
         try:
             sub = QMdiSubWindow()
             sub.setWindowIcon(QIcon('adrenaline.png'))
-            sub.setWidget(Terminal())
-            sub.setWindowTitle("Terminal")
+            sub.setWidget(widget)
+            sub.setWindowTitle(title)
             sub.setAttribute(Qt.WA_DeleteOnClose)
-            sub.setOption(QMdiSubWindow.RubberBandResize)
+            #sub.setAttribute(Qt.WA_NoSystemBackground)
+            #sub.setAttribute(Qt.WA_TranslucentBackground)
             self.mdi.addSubWindow(sub)
             sub.show()
+        except Exception as e:
+            logging.error("App.add_sub_window")
+            logging.error(e)
+            logging.exception("message")
+
+    def add_terminal(self):
+        try:
+            widget = Terminal()
+            self.add_sub_window(widget, "Terminal")
         except Exception as e:
             logging.error("App.add_terminal")
             logging.error(e)
@@ -113,56 +197,33 @@ class App(QMainWindow):
 
     def add_tabbed_browser(self):
         try:
-            sub = QMdiSubWindow()
-            sub.setWindowIcon(QIcon('adrenaline.png'))
-            sub.setWidget(Browser())
-            sub.setWindowTitle("Web Browser")
-            sub.setAttribute(Qt.WA_DeleteOnClose)
-            sub.setOption(QMdiSubWindow.RubberBandResize)
-            self.mdi.addSubWindow(sub)
-            sub.show()
+            widget = Browser()
+            self.add_sub_window(widget, "Web Browser")
         except Exception as e:
             logging.error("App.tabbed_browser")
             logging.error(e)
          
     def add_file_manager(self):
         try:
-            sub = QMdiSubWindow()
-            sub.setWidget(FileBrowser())
-            sub.setWindowIcon(QIcon('adrenaline.png'))
-            sub.setWindowTitle("FileManager")
-            sub.setAttribute(Qt.WA_DeleteOnClose)
-            sub.setOption(QMdiSubWindow.RubberBandResize)
-            self.mdi.addSubWindow(sub)
-            sub.show()
+            widget = FileBrowser()
+            self.add_sub_window(widget, "File Manager")
         except Exception as e:
             logging.error("App.add_file_manager")
             logging.error(e)
          
     def add_media_player(self):
         try:
-            sub = QMdiSubWindow()
-            sub.setWindowIcon(QIcon('adrenaline.png'))
-            sub.setWidget(VideoPlayer())
-            sub.setWindowTitle("MediaPlayer")
-            sub.setAttribute(Qt.WA_DeleteOnClose)
-            sub.setOption(QMdiSubWindow.RubberBandResize)
-            self.mdi.addSubWindow(sub)
-            sub.show()
+            widget = VideoPlayer()
+            self.add_sub_window(widget, "Video Player")
         except Exception as e:
             logging.error("App.add_media_player")
             logging.error(e)
 
     def add_vnc(self):
         try:
+            widget = VncClient()
+            self.add_sub_window(widget, "VNC")
             sub = QMdiSubWindow()
-            sub.setWindowIcon(QIcon('adrenaline.png'))
-            sub.setWidget(VncClient())
-            sub.setWindowTitle("VNC")
-            sub.setAttribute(Qt.WA_DeleteOnClose)
-            sub.setOption(QMdiSubWindow.RubberBandResize)
-            self.mdi.addSubWindow(sub)
-            sub.show()
         except Exception as e:
             logging.error("App.add_vnc")
             logging.error(e)
@@ -181,6 +242,7 @@ class Terminal(QTermWidget):
             self.copy.activated.connect(self.copyClipboard)
             self.paste = QShortcut(QKeySequence("Shift+Ins"),self)
             self.paste.activated.connect(self.pasteClipboard)
+            self.show()
         except Exception as e:
             logging.error("Terminal.__init__")
             logging.error(e)
