@@ -45,9 +45,9 @@ class MDIArea(QMdiArea):
 
 class statusBar(QObject):
 
-    def __init__(self, status_label):
+    def __init__(self, status_bar):
         super().__init__()
-        self.status_label = status_label
+        self.status_bar = status_bar
 
     def update_status_bar(self):
         try:
@@ -55,7 +55,7 @@ class statusBar(QObject):
                 acpi_info = subprocess.check_output(['acpi'], shell=True)
                 battery = acpi_info.decode('utf-8')
                 current = datetime.datetime.now()
-                self.status_label.setText(str(current.strftime("%m-%d-%Y %H:%M")+"\t\t"+battery))
+                self.status_bar.showMessage(str(current.strftime("%m-%d-%Y %H:%M")+"\t\t"+battery))
                 time.sleep(1)
         except Exception as e:
             logging.error("App.update_status")
@@ -99,8 +99,6 @@ class App(QMainWindow):
             self.windows = bar.addMenu("Window")
             self.windows.triggered[QAction].connect(self.window_activate)
 
-            self.status_label = QLabel("")
-            self.statusBar().addPermanentWidget(self.status_label)
             self.start_status_bar()
 
             self.mdi.tileSubWindows()
@@ -115,7 +113,7 @@ class App(QMainWindow):
         try:
             logging.info("App.start_status_bar")
             self.status_thread = QThread()
-            self.status_worker = statusBar(self.status_label)
+            self.status_worker = statusBar(self.statusBar())
             self.status_worker.moveToThread(self.status_thread)
             self.status_thread.started.connect(self.status_worker.update_status_bar)
             logging.info("bout to start status thread")
