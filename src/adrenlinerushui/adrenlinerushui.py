@@ -782,8 +782,11 @@ class FileBrowser(QWidget):
             logging.exception("message")
         
 
-if __name__ == "__main__":
+def start_ui():
     app = QApplication([])
     #app.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5'))
     ex = App()
     sys.exit(app.exec())
+
+if __name__ == "__main__":
+    start_ui()
