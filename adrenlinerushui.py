@@ -71,7 +71,6 @@ class App(QMainWindow):
             self.setWindowIcon(QIcon('adrenaline.png'))
             self.shortcut_quit = QShortcut(QKeySequence("Ctrl+Q"),self)
             self.shortcut_quit.activated.connect(QApplication.instance().quit)
-            #self.mdi = QMdiArea()
             self.bg_img = QPixmap('adrenaline.jpg')
             self.mdi = MDIArea(self.bg_img)
             self.mdi.subWindowActivated.connect(self.update_window_list)
@@ -175,8 +174,6 @@ class App(QMainWindow):
             sub.setWidget(widget)
             sub.setWindowTitle(title)
             sub.setAttribute(Qt.WA_DeleteOnClose)
-            #sub.setAttribute(Qt.WA_NoSystemBackground)
-            #sub.setAttribute(Qt.WA_TranslucentBackground)
             self.mdi.addSubWindow(sub)
             sub.show()
         except Exception as e:
@@ -233,6 +230,8 @@ class Terminal(QTermWidget):
         try:
             super(QTermWidget, self).__init__()
             self.finished.connect(self.close)
+            self.setTerminalBackgroundImage('adrenaline.jpg')
+            self.setTerminalBackgroundMode(2)
             self.setColorScheme("Linux")
             termfont = QFont("Terminus", 6, QFont.Bold)
             self.setTerminalFont(termfont)
@@ -240,7 +239,6 @@ class Terminal(QTermWidget):
             self.copy.activated.connect(self.copyClipboard)
             self.paste = QShortcut(QKeySequence("Shift+Ins"),self)
             self.paste.activated.connect(self.pasteClipboard)
-            self.show()
         except Exception as e:
             logging.error("Terminal.__init__")
             logging.error(e)
@@ -786,6 +784,6 @@ class FileBrowser(QWidget):
 
 if __name__ == "__main__":
     app = QApplication([])
-    app.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5'))
+    #app.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5'))
     ex = App()
     sys.exit(app.exec())

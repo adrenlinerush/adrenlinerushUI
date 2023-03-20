@@ -14,9 +14,6 @@ Pull Requests Welcome.
 - Create Ebuild for UI
 - Create Ebuild for qttermwidget python\sip\bindings
 - Create Ebuild for pyQVNCWidget
-- Backound image on qMDIArea
-- Make terminal transparent
-- status bar containing clock and acpi(battery)
 - Lots of other stuff
 
 ## Known Bugs
@@ -38,19 +35,56 @@ This has only been tested on a gentoo system.  Included in the gentoo directory 
 ```
 emerge dev-python/PyQt5 dev-python/twisted x11-libs/qtermwidget dev-python/qtdarkstyle dev-python/qtawesome
 ```
-2. compile the sip bindings for qtermwidget
+2. clone and change to pyqt dir
 ```
 git clone https://github.com/lxqt/qtermwidget.git
 cd qtermwidget/pyqt
+```
+3. modify the sip bindings
+```
+iff --git a/pyqt/pyproject.toml b/pyqt/pyproject.toml
+index 151e202..ee35aef 100644
+--- a/pyqt/pyproject.toml
++++ b/pyqt/pyproject.toml
+@@ -1,5 +1,4 @@
+ # https://www.riverbankcomputing.com/static/Docs/sip/index.html
+-
+ [build-system]
+ requires = ["sip", "PyQt-builder"]
+ build-backend = "sipbuild.api"
+diff --git a/pyqt/sip/qtermwidget.sip b/pyqt/sip/qtermwidget.sip
+index d2523ef..ea61fba 100644
+--- a/pyqt/sip/qtermwidget.sip
++++ b/pyqt/sip/qtermwidget.sip
+@@ -11,7 +11,7 @@
+ class QTermWidget : QWidget {
+ 
+ %TypeHeaderCode
+-#include <qtermwidget.h>
++#include <qtermwidget5/qtermwidget.h>
+ %End
+ 
+ public:
+@@ -41,6 +41,8 @@ public:
+     void setTerminalFont(QFont &font);
+     QFont getTerminalFont();
+     void setTerminalOpacity(qreal level);
++    void setTerminalBackgroundImage(const QString & backgroundImage);
++    void setTerminalBackgroundMode(int);
+     void setEnvironment(const QStringList & environment);
+     void setShellProgram(const QString & progname);
+     void setWorkingDirectory(const QString & dir);
+```
+4.. compile the sip bindings for qtermwidget
 sip-build
 sip-install
 ```
-3. get pyQVNCWidget and symlink the qvncwidget subdir to same dir as ui script
+5. get pyQVNCWidget and symlink the qvncwidget subdir to same dir as ui script
 ```
 git clone https://github.com/zocker-160/pyQVNCWidget.git
 symlink -s pyQVNCWidget/qvncwidet same/dir/as/adrenlinerushui/ 
 ```
-4. set the Qt Env (putting in .bashrc is a good idea)
+6. set the Qt Env (putting in .bashrc is a good idea)
 ```
 export QT_QPA_PLATFORM='linuxfb'
 export QT_QPA_FB_FORCE_FULLSCREEN='1'
