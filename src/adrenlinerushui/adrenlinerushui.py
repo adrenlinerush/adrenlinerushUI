@@ -13,7 +13,7 @@ import qtawesome as qta
 logging.basicConfig(filename="ui.log", encoding='utf-8', level=logging.ERROR)
 textchars = bytearray({7,8,9,10,12,13,27} | set(range(0x20, 0x100)) - {0x7f})
 is_binary_string = lambda bytes: bool(bytes.translate(None, textchars))
-
+os.environ["TERM"] = "konsole-256color"
 
 class MDIArea(QMdiArea):
 
@@ -76,6 +76,12 @@ class App(QMainWindow):
             self.mdi.subWindowActivated.connect(self.update_window_list)
             self.shortcut_next_window = QShortcut(QKeySequence("Alt+Tab"), self)
             self.shortcut_next_window.activated.connect(self.mdi.activateNextSubWindow)
+            self.shortcut_tile_windows = QShortcut(QKeySequence("Alt+T"), self)
+            self.shortcut_tile_windows.activated.connect(self.mdi.tileSubWindows)
+            self.shortcut_restore_window = QShortcut(QKeySequence("Alt+R"), self)
+            self.shortcut_restore_window.activated.connect(lambda: self.mdi.activeSubWindow().setWindowState(Qt.WindowNoState))
+            self.shortcut_maximize_window = QShortcut(QKeySequence("Alt+M"), self)
+            self.shortcut_maximize_window.activated.connect(lambda: self.mdi.activeSubWindow().setWindowState(Qt.WindowMaximized))
             self.setCentralWidget(self.mdi)
             self.add_terminal()
             self.add_tabbed_browser()
@@ -360,6 +366,8 @@ class Browser(QWidget):
             self.fwdbtn.setIcon(self.style().standardIcon(getattr(QStyle, 'SP_ArrowForward')))
             self.reloadbtn = QPushButton()
             self.reloadbtn.setIcon(self.style().standardIcon(getattr(QStyle, 'SP_BrowserReload')))
+            self.shortcut_reload = QShortcut(QKeySequence("F5"), self)
+            self.shortcut_new_tab = QShortcut(QKeySequence("Ctrl+T"), self)
             self.homebtn = QPushButton()
             self.homebtn.setIcon(qta.icon("fa5s.home"))
             self.stopbtn = QPushButton()
@@ -367,6 +375,8 @@ class Browser(QWidget):
             self.backbtn.clicked.connect(lambda: self.tabs.currentWidget().back())
             self.fwdbtn.clicked.connect(lambda: self.tabs.currentWidget().forward())
             self.reloadbtn.clicked.connect(lambda: self.tabs.currentWidget().reload())
+            self.shortcut_reload.activated.connect(lambda: self.tabs.currentWidget().reload())
+            self.shortcut_new_tab.activated.connect(lambda: self.add_tab())
             self.stopbtn.clicked.connect(lambda: self.tabs.currentWidget().stop())
             self.homebtn.clicked.connect(self.go_home)
             self.urlbar = QLineEdit()
@@ -787,6 +797,7 @@ def start_ui():
     #app.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5'))
     ex = App()
     sys.exit(app.exec())
+
 
 if __name__ == "__main__":
     start_ui()
