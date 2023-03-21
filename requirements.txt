@@ -16,3 +16,4 @@ service-identity==21.1.0
 sip==6.7.5
 Twisted==22.10.0
 urllib3==1.26.14
+qvncwidget==0.2.4
