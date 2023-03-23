@@ -1,0 +1,2 @@
+[gui_scripts]
+adrenlinreushui = adrenlinerushui:start_ui
