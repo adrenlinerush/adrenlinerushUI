@@ -28,4 +28,6 @@ BDEPEND="
 	>=dev-qt/qtcore-5.15.8-r3[icu]
 	>=dev-qt/qtprintsupport-5.15.8[cups]
 	>=sys-power/acpi-1.7-r1
+	>=dev-python/qtawesome-1.2.2
+	>=dev-python/qdarkstyle-3.1
 " 
