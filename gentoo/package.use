@@ -27,7 +27,7 @@ dev-qt/qtmultimedia widgets gstreamer
 sys-libs/zlib minizip
 dev-qt/qtwebchannel qml
 dev-libs/libxml2 icu
-dev-qt/qtwebengine widgets -binddist
+dev-qt/qtwebengine widgets -bindist
 dev-python/PyQt5 widgets multimedia sql opengl network dbus declarative printsupport gui webchannel
 dev-qt/qtcore icu
 #www-client/w3m imlib
@@ -35,3 +35,4 @@ media-libs/gst-plugins-base egl gbm opengl
 media-plugins/gst-plugins-meta alsa dvd ffmpeg flac http mp3 mpeg ogg vorbis
 dev-qt/qtprintsupport cups
 app-text/ghostscript-gpl cups
+sys-apps/systemd-utils udev

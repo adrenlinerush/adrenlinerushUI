@@ -8,14 +8,6 @@ No Warranty implied or expressed.
 
 Pull Requests Welcome.
 
-## Todo
-
-- Build pip package
-- Create Ebuild for UI
-- Create Ebuild for qttermwidget python\sip\bindings
-- Create Ebuild for pyQVNCWidget
-- Lots of other stuff
-
 ## Known Bugs
 
 VNC Client loses focus preventing keystrokes from making it to the client.  Oddly enough mouse events still work.  Click on another window and click back on it.
@@ -30,85 +22,54 @@ This has only been tested on a gentoo system.  Included in the gentoo directory 
 - mask file with kernel (only running specific version as haven't ported the userspace frambufer patches to a newer kernel for use with fbsplash)
 - accept_keywords for a few masked packages being run on the system
 
-1. emerge deps
 
-```
-emerge dev-python/PyQt5 dev-python/twisted x11-libs/qtermwidget dev-python/qtdarkstyle dev-python/qtawesome
-```
-2. clone and change to pyqt dir
-```
-git clone https://github.com/lxqt/qtermwidget.git
-cd qtermwidget/pyqt
-```
-3. modify the sip bindings
-```
-iff --git a/pyqt/pyproject.toml b/pyqt/pyproject.toml
-index 151e202..ee35aef 100644
---- a/pyqt/pyproject.toml
-+++ b/pyqt/pyproject.toml
-@@ -1,5 +1,4 @@
- # https://www.riverbankcomputing.com/static/Docs/sip/index.html
--
- [build-system]
- requires = ["sip", "PyQt-builder"]
- build-backend = "sipbuild.api"
-diff --git a/pyqt/sip/qtermwidget.sip b/pyqt/sip/qtermwidget.sip
-index d2523ef..ea61fba 100644
---- a/pyqt/sip/qtermwidget.sip
-+++ b/pyqt/sip/qtermwidget.sip
-@@ -11,7 +11,7 @@
- class QTermWidget : QWidget {
- 
- %TypeHeaderCode
--#include <qtermwidget.h>
-+#include <qtermwidget5/qtermwidget.h>
- %End
- 
- public:
-@@ -41,6 +41,8 @@ public:
-     void setTerminalFont(QFont &font);
-     QFont getTerminalFont();
-     void setTerminalOpacity(qreal level);
-+    void setTerminalBackgroundImage(const QString & backgroundImage);
-+    void setTerminalBackgroundMode(int);
-     void setEnvironment(const QStringList & environment);
-     void setShellProgram(const QString & progname);
-     void setWorkingDirectory(const QString & dir);
-```
-4. compile the sip bindings for qtermwidget
-```
-sip-build
-sip-install
-```
-5. get pyQVNCWidget and symlink the qvncwidget subdir to same dir as ui script
-```
-git clone https://github.com/zocker-160/pyQVNCWidget.git
-symlink -s pyQVNCWidget/qvncwidet same/dir/as/adrenlinerushui/ 
-```
-6. set the Qt Env (putting in .bashrc is a good idea)
+### Gentoo
+
+1. add the ebuilds in gentoo/portage_overlay to your local portage overlay
+2. emerge --ask adrenlinerushui
+3. . set the Qt Env (putting in .bashrc is a good idea)
 ```
 export QT_QPA_PLATFORM='linuxfb'
 export QT_QPA_FB_FORCE_FULLSCREEN='1'
 ```
 
-At this point you should be able execute the script:
+### Other Distros - UNTESTED
+
+1. install deps with package manager:
 ```
-python adrenlinerushui.py
+PyQt5, acpi, qtcore, qtgui, qtmultimedia, qtprintsupport, qtquickcontrols, qtquickcontrols2, qtwebview, qtermwidget
+```
+2. pip install https://github.com/adrenlinerush/adrenlinerushUI/releases/download/v0.0.1/adrenlinerushui-0.0.1-py3-none-any.whl
+3. set the Qt Env (putting in .bashrc is a good idea)
+```
+export QT_QPA_PLATFORM='linuxfb'
+export QT_QPA_FB_FORCE_FULLSCREEN='1'
+```
+
+### Run It
+
+```
+adrenlinerushui
 ```
 
 On any other system you can probably just pip install all the deps and run the script.
 
 ## User Guide
 
-### Windows
+- Ctrl+Q - Exit the Application
 
-Switch between windows with Alt+Tab or the Window menu at the top of screen
+### Windows
 
 To resize window right click on window bar and select size
 
 View has the ability to tile all open windows or cascad them
 
 You can click the window bar and drack them around
+
+- Alt+T - Tile windows
+- Alt+M - Maximize Window
+- Alt+R - Restore Window
+- Alt+Tab - switch to next window
 
 ### Favorties
 
@@ -131,6 +92,8 @@ The browser supports saving page as PDF with Ctrl+P.  If you want to print somet
 
 - Ctrl+P - Saves current tab as PDF
 - Ctrl+G - Wipes the text from the URL bar and focus for entry
+- Ctrl+T - Open New Tab
+- F5 - refresh
 - double clicking a tab - opens a new tab
 
 ### Media Player
