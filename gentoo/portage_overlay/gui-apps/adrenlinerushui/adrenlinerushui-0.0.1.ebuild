@@ -30,4 +30,5 @@ BDEPEND="
 	>=sys-power/acpi-1.7-r1
 	>=dev-python/qtawesome-1.2.2
 	>=dev-python/qdarkstyle-3.1
+	>=dev-python/PyQtWebEngine-5.15.6
 " 
