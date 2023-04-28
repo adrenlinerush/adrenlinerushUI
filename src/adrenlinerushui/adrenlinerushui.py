@@ -7,7 +7,7 @@ from PyQt5.QtMultimedia import *
 from PyQt5.QtMultimediaWidgets import *
 from qvncwidget import QVNCWidget
 from QTermWidget import QTermWidget
-import os, sys, logging, qdarkstyle 
+import os, sys, logging#, qdarkstyle 
 import subprocess, time, threading, datetime
 import qtawesome as qta
 logging.basicConfig(filename="ui.log", encoding='utf-8', level=logging.ERROR)
