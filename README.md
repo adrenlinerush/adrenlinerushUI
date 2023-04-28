@@ -38,6 +38,7 @@ lrwxrwxrwx 1 root root 22 Apr 16 13:10 /usr/bin/qmake5 -> ../lib64/qt5/bin/qmake
 export QT_QPA_PLATFORM='linuxfb'
 export QT_QPA_FB_FORCE_FULLSCREEN='1'
 ```
+5. ensure users are members of input, audio and video groups
 
 ### Other Distros - UNTESTED
 
