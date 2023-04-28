@@ -27,7 +27,13 @@ This has only been tested on a gentoo system.  Included in the gentoo directory 
 
 1. add the ebuilds in gentoo/portage_overlay to your local portage overlay
 2. emerge --ask adrenlinerushui
-3. . set the Qt Env (putting in .bashrc is a good idea)
+3. if you get an error building one of the QT widgets check your qmake symlink, I had to create it
+```
+austin@mightymouse ~/adrenlinerushUI $ ls -Alh /usr/bin/qmake*
+lrwxrwxrwx 1 root root 24 Apr 28 14:39 /usr/bin/qmake -> /usr/lib64/qt5/bin/qmake
+lrwxrwxrwx 1 root root 22 Apr 16 13:10 /usr/bin/qmake5 -> ../lib64/qt5/bin/qmake
+```
+4. . set the Qt Env (putting in .bashrc is a good idea)
 ```
 export QT_QPA_PLATFORM='linuxfb'
 export QT_QPA_FB_FORCE_FULLSCREEN='1'
