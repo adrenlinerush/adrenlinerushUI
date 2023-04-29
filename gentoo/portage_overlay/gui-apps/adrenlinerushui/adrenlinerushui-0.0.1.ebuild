@@ -32,4 +32,5 @@ BDEPEND="
 	>=dev-python/qdarkstyle-3.1
 	>=dev-python/PyQtWebEngine-5.15.6
 	>=media-plugins/gst-plugins-meta-1.20.4
+	>=media-fonts/terminus-font-4.49.1
 " 
