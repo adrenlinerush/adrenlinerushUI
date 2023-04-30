@@ -99,6 +99,7 @@ class App(QMainWindow):
             start.addAction("File Manager")
             start.addAction("Media Player")
             start.addAction("Vnc Client")
+            start.addAction("Calculator")
             start.triggered[QAction].connect(self.start)
 
             view = bar.addMenu("View")
@@ -152,6 +153,8 @@ class App(QMainWindow):
             self.add_media_player()
         elif action.text() == "Vnc Client":
             self.add_vnc()
+        elif action.text() == "Calculator":
+            self.add_calculator()
         elif action.text() == "Quit":
             QApplication.instance().quit()
 
@@ -232,6 +235,16 @@ class App(QMainWindow):
             sub = QMdiSubWindow()
         except Exception as e:
             logging.error("App.add_vnc")
+            logging.error(e)
+            logging.exception("message")
+
+    def add_calculator(self):
+        try:   
+            widget = Calculator()
+            self.add_sub_window(widget, "Calculator")
+            sub = QMdiSubWindow()
+        except Exception as e:
+            logging.error("App.add_calculator")
             logging.error(e)
             logging.exception("message")
 
@@ -727,6 +740,71 @@ class VideoPlayer(QWidget):
         self.playBtn.setEnabled(False)
         logging.error("VideoPlayer.handleError")
         logging.error(self.mediaPlayer.errorString())
+
+
+class Calculator(QWidget):
+    def __init__(self):
+        try:
+            super(QWidget, self).__init__()
+            self.calc_layout = QGridLayout(self)
+  
+            self.label_in = QLabel(self)
+            self.label_out = QLabel(self)
+            self.label_in.setAlignment(Qt.AlignRight)
+            self.label_out.setAlignment(Qt.AlignRight)
+            self.calc_layout.addWidget(self.label_in, 0 , 0, 1, 4)
+            self.calc_layout.addWidget(self.label_out, 1, 0, 1, 4) 
+
+            buttons_ui: list = [
+                ["(",  ")",  "DEL", "AC"],
+                ["7",  "8",  "9",   "/" ], 
+                ["4",  "5",  "6",   "*" ],
+                ["1",  "2",  "3",   "-" ],
+                [".",  "0",  "^" ,   "+"],
+            ]
+
+            self.buttons = {}
+
+            for row, values in enumerate(buttons_ui):
+                logging.info("row: " + str(row))
+                for col, val in enumerate(values):
+                    logging.info("col: " + str(col))
+                    logging.info("val: " + str(val))
+
+                    btn = QPushButton(val, self)
+                    btn.clicked.connect(self.btn_clicked)
+                    self.calc_layout.addWidget(btn, row+2, col, 1, 1)
+                    if len(val) == 1:
+                        btn.setShortcut(QKeySequence(val))
+                    elif val == "DEL":
+                        btn.setShortcut(QKeySequence('Del'))
+                    elif val == "AC":
+                        btn.setShortcut(QKeySequence('Backspace'))
+
+
+        except Exception as e:
+            logging.error("Calculator.__init__")
+            logging.error(e)
+            logging.exception("message")    
+
+    def btn_clicked(self):
+        try:
+            btn = self.sender()
+            if len(btn.text()) == 1:
+                self.label_in.setText(self.label_in.text() + btn.text())
+            elif btn.text() == 'DEL':
+                self.label_in.setText(self.label_in.text()[:-1])
+            elif btn.text() == 'AC':
+                self.label_in.setText(None)
+            try: output = str(eval(self.label_in.text()))[:20]
+            except ZeroDivisionError: output = "inf"
+            except SyntaxError: output = "nan"
+            self.label_out.setText(output)
+        except Exception as e:
+            logging.error("Calculator.btn_clicked")
+            logging.error(e)
+            logging.exception("message")
+
 
 class FileBrowser(QWidget):
     def __init__(self):
