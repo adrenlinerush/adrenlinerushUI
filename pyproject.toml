@@ -19,7 +19,7 @@ classifiers = [
 adrenlinreushui = "adrenlinerushui.adrenlinerushui:start_ui"
 
 [build-system]
-requires = ["py3qterm==0.4","pyDes==2.0.1","pyOpenSSL==23.0.0","pyparsing==3.0.9","PyQt-builder==1.12.2","PyQt5==5.15.7","PyQt5-sip==12.11.0","PyQtWebEngine==5.15.6","PySocks==1.7.1","QtAwesome==1.2.2","QTermWidget @ https://github.com/adrenlinerush/qtermwidget/releases/download/v1.2.0/QTermWidget-1.2.0.tar.gz","QtPy==2.3.0","requests==2.28.2","service-identity==21.1.0","sip==6.7.5","Twisted==22.10.0","urllib3==1.26.14","qvncwidget==0.2.4"]
+requires = ["py3qterm==0.4","pyDes==2.0.1","pyOpenSSL==23.0.0","pyparsing==3.0.9","PyQt-builder==1.12.2","PyQt5==5.15.7","PyQt5-sip==12.11.0","PyQtWebEngine==5.15.6","PySocks==1.7.1","QtAwesome==1.2.2","QTermWidget @ https://github.com/adrenlinerush/qtermwidget/releases/download/v1.2.0/QTermWidget-1.2.0-cp37-abi3-manylinux_2_17_x86_64.whl","QtPy==2.3.0","requests==2.28.2","service-identity==21.1.0","sip==6.7.5","Twisted==22.10.0","urllib3==1.26.14","qvncwidget==0.2.4"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.package-data]
