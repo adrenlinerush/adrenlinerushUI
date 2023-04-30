@@ -102,6 +102,10 @@ The browser supports saving page as PDF with Ctrl+P.  If you want to print somet
 - Ctrl+T - Open New Tab
 - F5 - refresh
 - double clicking a tab - opens a new tab
+- Ctrl+F - opens search dialog
+  - N - Next
+  - P - Previous
+  - ESC - Exit search
 
 ### Media Player
 

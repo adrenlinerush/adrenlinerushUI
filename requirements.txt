@@ -7,7 +7,6 @@ PyQt5==5.15.7
 PyQt5-sip==12.11.0
 PyQtWebEngine==5.15.6
 PySocks==1.7.1
-QDarkStyle==3.1
 QtAwesome==1.2.2
 QTermWidget==1.2.0
 QtPy==2.3.0
