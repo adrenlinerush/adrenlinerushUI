@@ -9,6 +9,7 @@ from qvncwidget import QVNCWidget
 from QTermWidget import QTermWidget
 import os, sys, logging#, qdarkstyle 
 import subprocess, time, threading, datetime
+from shutil import which
 import qtawesome as qta
 logging.basicConfig(filename="ui.log", encoding='utf-8', level=logging.ERROR)
 textchars = bytearray({7,8,9,10,12,13,27} | set(range(0x20, 0x100)) - {0x7f})
@@ -48,14 +49,18 @@ class statusBar(QObject):
     def __init__(self, status_bar):
         super().__init__()
         self.status_bar = status_bar
+        self.is_acpi = which('acpi') is not None
 
     def update_status_bar(self):
         try:
             while True: 
-                acpi_info = subprocess.check_output(['acpi'], shell=True)
-                battery = acpi_info.decode('utf-8')
                 current = datetime.datetime.now()
-                self.status_bar.showMessage(str(current.strftime("%m-%d-%Y %H:%M")+"\t\t"+battery))
+                status_text = current.strftime("%m-%d-%Y %H:%M")
+                if self.is_acpi:
+                    acpi_info = subprocess.check_output(['acpi'], shell=True)
+                    battery = acpi_info.decode('utf-8')
+                    status_text = current.strftime("%m-%d-%Y %H:%M")+"\t\t"+battery
+                self.status_bar.showMessage(status_text)
                 time.sleep(1)
         except Exception as e:
             logging.error("App.update_status")
@@ -368,6 +373,8 @@ class Browser(QWidget):
             self.reloadbtn.setIcon(self.style().standardIcon(getattr(QStyle, 'SP_BrowserReload')))
             self.shortcut_reload = QShortcut(QKeySequence("F5"), self)
             self.shortcut_new_tab = QShortcut(QKeySequence("Ctrl+T"), self)
+            self.shortcut_find_text = QShortcut(QKeySequence("Ctrl+F"), self)
+            self.shortcut_find_text.activated.connect(self.find_text)
             self.homebtn = QPushButton()
             self.homebtn.setIcon(qta.icon("fa5s.home"))
             self.stopbtn = QPushButton()
@@ -403,6 +410,13 @@ class Browser(QWidget):
             self.load_favorites()
             self.setLayout(self.layout)
             self.add_tab()
+            self.search_text = ''
+            self.shortcut_find_next = QShortcut(QKeySequence("N"), self)
+            self.shortcut_find_prev = QShortcut(QKeySequence("P"), self)
+            self.shortcut_find_exit = QShortcut(QKeySequence("ESC"), self)
+            self.shortcut_find_next.activated.connect(self.find_next)
+            self.shortcut_find_prev.activated.connect(self.find_prev)
+            self.shortcut_find_exit.activated.connect(self.find_exit)
         except Exception as e:
             logging.error("Browser.__init__")
             logging.error(e)
@@ -465,6 +479,49 @@ class Browser(QWidget):
                 logging.info("Browser.handle_auth set password")
         except Exception as e:
             logging.error("Browser.handle_auth")
+            logging.error(e)
+            logging.exception("message")
+
+    def find_text(self):
+        try:
+            text, ok = QInputDialog().getText(self,"Search", "Find Text:")
+            if text and ok:
+                logging.info("Browser.find_text")
+                logging.info(text)
+                self.search_text = text
+                self.tabs.currentWidget().page().findText(self.search_text, QWebEnginePage.FindFlags(0), self.find_text_callback)
+        except Exception as e:
+            logging.error("Browser.find_text")
+            logging.error(e)
+            logging.exception("message")
+
+    def find_text_callback(self, b_found):
+        logging.info(b_found)
+        if not b_found and self.search_text != None:
+            self.find_text()
+    
+    def find_next(self):
+        try:
+            self.tabs.currentWidget().page().findText(self.search_text, QWebEnginePage.FindFlags(0), self.find_text_callback)
+        except Exception as e:
+            logging.error("Browser.find_next")
+            logging.error(e)
+            logging.exception("message")
+
+    def find_prev(self):
+        try:
+            self.tabs.currentWidget().page().findText(self.search_text, QWebEnginePage.FindFlags(QWebEnginePage.FindBackward), self.find_text_callback)
+        except Exception as e:
+            logging.error("Browser.find_prev")
+            logging.error(e)
+            logging.exception("message")
+
+    def find_exit(self):
+        try:
+            self.search_text = None
+            self.tabs.currentWidget().page().findText(self.search_text, QWebEnginePage.FindFlags(0), self.find_text_callback)
+        except Exception as e:
+            logging.error("Browser.find_exit")
             logging.error(e)
             logging.exception("message")
 
