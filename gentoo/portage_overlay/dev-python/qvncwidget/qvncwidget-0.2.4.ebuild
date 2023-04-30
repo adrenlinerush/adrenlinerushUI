@@ -17,7 +17,7 @@ HOMEPAGE="
  
 LICENSE="GPL-3+" 
 SLOT="0" 
-KEYWORDS="amd64" 
+KEYWORDS="amd64 arm64" 
  
 BDEPEND=" 
     >=dev-python/PyQt5-5.15.7

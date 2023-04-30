@@ -15,9 +15,10 @@ SRC_URI="https://github.com/adrenlinerush/qtermwidget/releases/download/v${PV}/$
  
 LICENSE="GPL-2+" 
 SLOT="0" 
-KEYWORDS="amd64" 
+KEYWORDS="amd64 arm64" 
  
 BDEPEND=" 
     >=x11-libs/qtermwidget-1.2.0
     >=dev-python/PyQt5-5.15.7
+	>=dev-python/build-0.10.0
 " 
