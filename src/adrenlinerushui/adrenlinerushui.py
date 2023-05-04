@@ -929,6 +929,7 @@ class FileBrowser(QWidget):
 
 def start_ui():
     app = QApplication([])
+    app.setFont(QFont("Terminus", 6, QFont.Bold))
     #app.setStyleSheet(qdarkstyle.load_stylesheet(qt_api='pyqt5'))
     ex = App()
     sys.exit(app.exec())
